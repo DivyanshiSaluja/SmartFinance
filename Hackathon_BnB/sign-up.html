@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Money Mantra</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="main-auth.js"></script>
+    <style>
+        /* If you want to add extra signup-specific styles, put them here */
+        .signup-container {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+        .signup-container h2 {
+            color: #1e40af;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .signup-btn {
+            background-color: #1e40af;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .signup-btn:hover {
+            background-color: #1a3a9a;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        .login-link a {
+            color: #1e40af;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dynamic Canvas Background (same as index.html) -->
+    <canvas id="dynamicCanvas"></canvas>
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="./index1.html" class="nav-btn login-btn">Login</a>
+            <a href="./signup.html" class="nav-btn signup-btn active">Sign Up</a>
+        </nav>
+    </header>
+
+    <!-- Signup Form Container -->
+    <main>
+        <div class="signup-container">
+            <h2>Create Your Account</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="signup-btn" action="./index.html">Sign Up</button>
+            </form>
+            <div class="login-link">
+                Already have an account? <a href="./index1.html">Log in</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (same as index.html) -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">Money Mantra</div>
+            <p class="footer-text">Empowering financial decisions through AI-powered insights and expert guidance.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">About Us</a>
+                <a href="#" class="footer-link">Features</a>
+                <a href="#" class="footer-link">Contact Us</a>
+                <a href="./index_joinTeam.html" class="footer-link">Join Team</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Money Mantra. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts (same as index.html) -->
+    <script src="script.js"></script>
+    <script>
+        // Example: Supabase signup logic (add to your main-auth.js or here)
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Example: Replace with your Supabase signup logic
+            // const { data, error } = await supabase.auth.signUp({
+            //     email: email,
+            //     password: password,
+            //     options: {
+            //         data: {
+            //             name: name
+            //         }
+            //     }
+            // });
+            // if (error) alert(error.message);
+            // else alert('Check your email for the confirmation link!');
+
+            // For demo, just redirect to login page after signup
+
+            document.getElementById('signupForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  const { error } = await signUp(email, password, name);
+  if (error) {
+    alert(`Signup failed: ${error.message}`);
+  } else {
+    alert('Check your email for confirmation!');
+  }
+});
+s
+            window.location.href = './index1.html';
+        });
+    </script>
+</body>
+</html>

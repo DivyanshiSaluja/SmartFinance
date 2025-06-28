@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in Page</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <section>
+  <div class="login-box">
+    <!-- Login Form -->
+    <form id="login-form" action="./index.html">
+      <h2>Login</h2>
+      <div class="input-box">
+        <span class="icon"><ion-icon name="mail"></ion-icon></span>
+        <input type="email" id="email" required>
+        <label>Email</label>
+      </div>
+      <div class="input-box">
+        <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+        <input type="password" id="password" required>
+        <label>Password</label>
+      </div>
+      <div class="remember-forgot">
+        <label><input type="checkbox" id="rememberMe">Remember me</label>
+        <a href="#">Forgot Password?</a>
+      </div>
+      <button type="submit" id="login-button">Login</button>
+      <div class="register-link">
+        <p>Don't have an account? <a href="#" id="show-register">Register</a></p>
+      </div>
+      <div id="login-message"></div>
+    </form>
+
+    <!-- Register Form (hidden by default) -->
+    <form id="register-form" style="display:none;">
+      <h2>Register</h2>
+      <div class="input-box">
+        <span class="icon"><ion-icon name="person"></ion-icon></span>
+        <input type="text" id="reg-name" required>
+        <label>Name</label>
+      </div>
+      <div class="input-box">
+        <span class="icon"><ion-icon name="mail"></ion-icon></span>
+        <input type="email" id="reg-email" required>
+        <label>Email</label>
+      </div>
+      <div class="input-box">
+        <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+        <input type="password" id="reg-password" required>
+        <label>Password</label>
+      </div>
+      <button type="submit" id="register-button">Register</button>
+      <div class="register-link">
+        <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+      </div>
+      <div id="register-message"></div>
+    </form>
+  </div>
+</section>
+
+    <!-- <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script> -->
+
+    <!-- SupaBase client -->
+     <script type="module">
+  // Fix for module loading
+  import { supabase } from './supabase.js';
+  window.supabase = supabase;
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script type="module" src="auth.js"></script>
+  <script type="module" src="main-auth.js"></script>
+  <script src="script1.js"></script>
+
+</body>
+</html>
