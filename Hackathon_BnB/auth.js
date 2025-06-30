@@ -1,57 +1,140 @@
-// auth.js
 import { supabase } from './supabaseClient.js';
 
-// Sign up function
-export async function signUp(email, password, name) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: name }
+// 🔁 Sync minimal user to backend
+async function initUserInBackend(user, token) {
+  try {
+    const res = await fetch('http://localhost:3000/api/user/init', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        email: user.email,
+        name: user.user_metadata?.full_name || 'Anonymous',
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      console.error('Init user failed:', data);
+    } else {
+      console.log('User initialized in backend:', data);
+    }
+  } catch (err) {
+    console.error('Failed to initialize user in backend:', err);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+  // const showRegister = document.getElementById('show-register');
+  // const showLogin = document.getElementById('show-login');
+
+  // 🔄 Toggle Login/Register
+  showRegister?.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'block';
+  });
+
+  showLogin?.addEventListener('click', (e) => {
+    e.preventDefault();
+    registerForm.style.display = 'none';
+    loginForm.style.display = 'block';
+  });
+
+  // ✅ Login Handler
+  loginForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email')?.value;
+    const password = document.getElementById('password')?.value;
+    const messageEl = document.getElementById('login-message');
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      messageEl.textContent = `Login failed: ${error.message}`;
+      messageEl.style.color = 'red';
+    } else {
+      const user = data.user;
+      const token = data.session.access_token;
+
+      await initUserInBackend(user, token);
+
+      localStorage.setItem('sb-access-token', token);
+      messageEl.textContent = 'Login successful!';
+      messageEl.style.color = 'green';
+      window.location.href = './index.html';
     }
   });
-  return { data, error };
-}
 
-// Login function
-export async function signIn(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (!error && data?.session?.access_token) {
-    localStorage.setItem('accessToken', data.session.access_token);
-  }
-  return { data, error };
-}
+  // ✅ Register Handler with Auto-Login + Init Backend
+  registerForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('reg-name')?.value;
+    const email = document.getElementById('reg-email')?.value;
+    const password = document.getElementById('reg-password')?.value;
+    const messageEl = document.getElementById('register-message');
 
-// Logout function
-export async function signOut() {
-  await supabase.auth.signOut();
-  localStorage.removeItem('accessToken');
-}
+    const { data: signupData, error: signupError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name },
+      },
+    });
 
-// Get current user
-export async function getCurrentUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
-}
+    if (signupError) {
+      messageEl.textContent = `Signup failed: ${signupError.message}`;
+      messageEl.style.color = 'red';
+      return;
+    }
 
-// Get session token
-export async function getSessionToken() {
-  const { data: { session } } = await supabase.auth.getSession();
-  return session?.access_token;
-}
+    // Optional: Inform user about email confirmation
+    if (!signupData.session) {
+      messageEl.textContent = 'Signup successful! Please check your email to confirm before logging in.';
+      messageEl.style.color = 'blue';
+      return;
+    }
 
-// API call with token
-export async function apiRequest(url, method = 'GET', body = null) {
-  const token = await getSessionToken();
-  if (!token) throw new Error('Not authenticated');
-  const response = await fetch(url, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: body ? JSON.stringify(body) : null
+    // 🔐 Auto-login after signup (if no email confirmation required)
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      messageEl.textContent = `Signup success, but login failed: ${signInError.message}`;
+      messageEl.style.color = 'orange';
+      return;
+    }
+
+    const user = signInData.user;
+    const token = signInData.session.access_token;
+    await initUserInBackend(user, token);
+
+    localStorage.setItem('sb-access-token', token);
+    messageEl.textContent = 'Signup and login successful! Redirecting...';
+    messageEl.style.color = 'green';
+
+    setTimeout(() => {
+      window.location.href = './index.html';
+    }, 1000);
   });
-  if (!response.ok) throw new Error('API request failed');
-  return response.json();
+});
+
+// Check if user is logged in
+function isUserLoggedIn() {
+  return localStorage.getItem('sb-access-token') !== null;
 }
+
+// Redirect to login if not authenticated
+function requireAuthentication() {
+  if (!isUserLoggedIn()) {
+    alert('Please log in to access this feature');
+    window.location.href = './login/login.html';
+  }
+}
+
